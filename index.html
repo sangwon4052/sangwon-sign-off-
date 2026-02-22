@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>온라인 결재 시스템</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- 로그인 페이지 -->
+    <div id="loginPage" class="page">
+        <div class="login-container">
+            <div class="login-box">
+                <h1><i class="fas fa-file-signature"></i> 온라인 결재 시스템</h1>
+                <p class="version-info">v2.0.0 - Firebase 버전</p>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="loginEmail">이메일</label>
+                        <input type="email" id="loginEmail" required placeholder="이메일을 입력하세요" autocomplete="email">
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">비밀번호</label>
+                        <input type="password" id="loginPassword" required placeholder="비밀번호를 입력하세요" autocomplete="current-password">
+                    </div>
+                    <div class="form-group" style="display: flex; align-items: center; gap: 8px;">
+                        <input type="checkbox" id="rememberMe" style="width: auto; margin: 0;">
+                        <label for="rememberMe" style="margin: 0; cursor: pointer; user-select: none;">아이디 기억하기</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fas fa-sign-in-alt"></i> 로그인
+                    </button>
+                </form>
+                <div class="login-footer">
+                    <p>계정이 없으신가요? <a href="#" id="showSignupLink">회원가입</a></p>
+                </div>
+                <div class="default-account-info">
+                    <p><i class="fas fa-info-circle"></i> 기본 관리자 계정</p>
+                    <p>이메일: admin@company.com</p>
+                    <p>비밀번호: admin123</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 회원가입 페이지 -->
+    <div id="signupPage" class="page" style="display: none;">
+        <div class="login-container">
+            <div class="login-box">
+                <h1><i class="fas fa-user-plus"></i> 회원가입</h1>
+                <p class="signup-info">회원가입 신청 후 관리자 승인이 필요합니다.</p>
+                <form id="signupForm">
+                    <div class="form-group">
+                        <label for="signupName">이름</label>
+                        <input type="text" id="signupName" required placeholder="이름을 입력하세요">
+                    </div>
+                    <div class="form-group">
+                        <label for="signupEmail">이메일</label>
+                        <input type="email" id="signupEmail" required placeholder="이메일을 입력하세요">
+                    </div>
+                    <div class="form-group">
+                        <label for="signupPassword">비밀번호</label>
+                        <input type="password" id="signupPassword" required placeholder="비밀번호를 입력하세요 (최소 6자)">
+                    </div>
+                    <div class="form-group">
+                        <label for="signupRole">신청 역할</label>
+                        <select id="signupRole" required>
+                            <option value="">선택하세요</option>
+                            <option value="requester">신청자</option>
+                            <option value="approver">결재자</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fas fa-paper-plane"></i> 가입 신청
+                    </button>
+                </form>
+                <div class="login-footer">
+                    <p>이미 계정이 있으신가요? <a href="#" id="showLoginLink">로그인</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 메인 애플리케이션 -->
+    <div id="mainApp" style="display: none;">
+        <!-- 네비게이션 바 -->
+        <nav class="navbar">
+            <div class="navbar-brand">
+                <i class="fas fa-file-signature"></i> 온라인 결재 시스템
+            </div>
+            <div class="navbar-user">
+                <div class="auto-refresh-indicator">
+                    <i class="fas fa-sync-alt"></i>
+                    <span>자동 새로고침</span>
+                </div>
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span id="navbarUserName"></span>
+                    <span class="user-role" id="navbarUserRole"></span>
+                </div>
+                <button class="btn btn-logout" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i> 로그아웃
+                </button>
+            </div>
+        </nav>
+
+        <div class="app-container">
+            <!-- 사이드바 -->
+            <aside class="sidebar">
+                <ul class="sidebar-menu">
+                    <li class="menu-item active" data-page="dashboard">
+                        <i class="fas fa-home"></i>
+                        <span>대시보드</span>
+                    </li>
+                    
+                    <!-- 신청자 메뉴 -->
+                    <li class="menu-item requester-menu" data-page="myRequests" style="display: none;">
+                        <i class="fas fa-paper-plane"></i>
+                        <span>내 결재 신청</span>
+                    </li>
+                    <li class="menu-item requester-menu" data-page="newRequest" style="display: none;">
+                        <i class="fas fa-plus-circle"></i>
+                        <span>새 결재 요청</span>
+                    </li>
+                    
+                    <!-- 결재자 메뉴 -->
+                    <li class="menu-item approver-menu" data-page="pendingApprovals" style="display: none;">
+                        <i class="fas fa-clipboard-check"></i>
+                        <span>처리할 결재</span>
+                    </li>
+                    <li class="menu-item approver-menu" data-page="approvalHistory" style="display: none;">
+                        <i class="fas fa-history"></i>
+                        <span>처리 완료</span>
+                    </li>
+                    
+                    <!-- 관리자 메뉴 -->
+                    <li class="menu-item admin-menu" data-page="employeeRegistration" style="display: none;">
+                        <i class="fas fa-user-plus"></i>
+                        <span>직원 계정 생성</span>
+                    </li>
+                    <li class="menu-item admin-menu" data-page="pendingUsers" style="display: none;">
+                        <i class="fas fa-user-clock"></i>
+                        <span>가입 승인</span>
+                    </li>
+                    <li class="menu-item admin-menu" data-page="userManagement" style="display: none;">
+                        <i class="fas fa-users-cog"></i>
+                        <span>회원 관리</span>
+                    </li>
+                </ul>
+            </aside>
+
+            <!-- 메인 컨텐츠 -->
+            <main class="main-content">
+                <!-- 대시보드 페이지 -->
+                <div id="dashboardPage" class="content-page">
+                    <h2><i class="fas fa-home"></i> 대시보드</h2>
+                    <div id="dashboardContent">
+                        <!-- 동적 콘텐츠 -->
+                    </div>
+                </div>
+
+                <!-- 내 결재 신청 페이지 -->
+                <div id="myRequestsPage" class="content-page" style="display: none;">
+                    <h2><i class="fas fa-paper-plane"></i> 내 결재 신청</h2>
+                    <div id="myRequestsList">
+                        <!-- 동적 콘텐츠 -->
+                    </div>
+                </div>
+
+                <!-- 새 결재 요청 페이지 -->
+                <div id="newRequestPage" class="content-page" style="display: none;">
+                    <h2><i class="fas fa-plus-circle"></i> 새 결재 요청</h2>
+                    <p class="page-description">결재 요청서를 작성하고 파일을 첨부하여 제출하세요.</p>
+                    <div class="form-container">
+                        <form id="newRequestForm" class="request-form">
+                            <div class="form-group">
+                                <label for="requestTitle">제목 <span class="required">*</span></label>
+                                <input type="text" id="requestTitle" required placeholder="결재 제목을 입력하세요">
+                            </div>
+                            <div class="form-group">
+                                <label for="requestDescription">내용 <span class="required">*</span></label>
+                                <textarea id="requestDescription" rows="6" required placeholder="결재 내용을 입력하세요"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="assignedApprover">담당 결재자 <span class="required">*</span></label>
+                                <select id="assignedApprover" required>
+                                    <option value="">결재자를 선택하세요</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="requestFiles">첨부 파일 (워드, 한글, 엑셀)</label>
+                                <input type="file" id="requestFiles" multiple accept=".doc,.docx,.hwp,.xls,.xlsx">
+                                <small>여러 파일을 선택할 수 있습니다. (최대 10MB)</small>
+                                <div id="filePreviewList" class="file-preview-list"></div>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">
+                                <i class="fas fa-paper-plane"></i> 결재 요청
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- 처리할 결재 페이지 -->
+                <div id="pendingApprovalsPage" class="content-page" style="display: none;">
+                    <h2><i class="fas fa-clipboard-check"></i> 처리할 결재</h2>
+                    <div id="pendingApprovalsList">
+                        <!-- 동적 콘텐츠 -->
+                    </div>
+                </div>
+
+                <!-- 처리 완료 페이지 -->
+                <div id="approvalHistoryPage" class="content-page" style="display: none;">
+                    <h2><i class="fas fa-history"></i> 처리 완료</h2>
+                    <div id="approvalHistoryList">
+                        <!-- 동적 콘텐츠 -->
+                    </div>
+                </div>
+
+                <!-- 직원 계정 생성 페이지 -->
+                <div id="employeeRegistrationPage" class="content-page" style="display: none;">
+                    <h2><i class="fas fa-user-plus"></i> 직원 계정 생성</h2>
+                    <p class="page-description">신청자 또는 결재자 계정을 생성합니다. 생성된 계정은 즉시 사용 가능하며 모든 PC에서 로그인할 수 있습니다.</p>
+                    
+                    <div class="two-column-layout">
+                        <!-- 계정 생성 폼 -->
+                        <div class="form-card">
+                            <h3><i class="fas fa-user-plus"></i> 새 직원 계정 추가</h3>
+                            <form id="employeeRegistrationForm" class="request-form">
+                                <div class="form-group">
+                                    <label for="employeeName">이름 <span class="required">*</span></label>
+                                    <input type="text" id="employeeName" required placeholder="직원 이름">
+                                </div>
+                                <div class="form-group">
+                                    <label for="employeeEmail">이메일 <span class="required">*</span></label>
+                                    <input type="email" id="employeeEmail" required placeholder="직원 이메일 (로그인 ID)">
+                                </div>
+                                <div class="form-group">
+                                    <label for="employeePassword">비밀번호 <span class="required">*</span></label>
+                                    <input type="password" id="employeePassword" required placeholder="비밀번호 (최소 6자)" minlength="6">
+                                </div>
+                                <div class="form-group">
+                                    <label for="employeePasswordConfirm">비밀번호 확인 <span class="required">*</span></label>
+                                    <input type="password" id="employeePasswordConfirm" required placeholder="비밀번호 재입력" minlength="6">
+                                </div>
+                                <div class="form-group">
+                                    <label for="employeeRole">역할 <span class="required">*</span></label>
+                                    <select id="employeeRole" required>
+                                        <option value="">역할 선택</option>
+                                        <option value="requester">신청자 (결재 신청만 가능)</option>
+                                        <option value="approver">결재자 (승인 및 신청 가능)</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-block">
+                                    <i class="fas fa-user-plus"></i> 계정 생성
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- 직원 목록 -->
+                        <div class="list-card">
+                            <h3><i class="fas fa-users"></i> 전체 직원 목록</h3>
+                            <div class="filter-bar">
+                                <select id="employeeRoleFilter">
+                                    <option value="all">전체</option>
+                                    <option value="requester">신청자</option>
+                                    <option value="approver">결재자</option>
+                                </select>
+                            </div>
+                            <div id="employeesList" class="users-list">
+                                <!-- 동적 콘텐츠 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 가입 승인 페이지 -->
+                <div id="pendingUsersPage" class="content-page" style="display: none;">
+                    <h2><i class="fas fa-user-clock"></i> 가입 승인</h2>
+                    <div id="pendingUsersList">
+                        <!-- 동적 콘텐츠 -->
+                    </div>
+                </div>
+
+                <!-- 회원 관리 페이지 -->
+                <div id="userManagementPage" class="content-page" style="display: none;">
+                    <h2><i class="fas fa-users-cog"></i> 회원 관리</h2>
+                    <div id="userManagementList">
+                        <!-- 동적 콘텐츠 -->
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- 토스트 알림 -->
+    <div id="toast" class="toast"></div>
+
+    <!-- 결재 상세보기 모달 -->
+    <div id="approvalModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-file-alt"></i> 결재 상세보기</h2>
+                <button class="modal-close" onclick="closeApprovalModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="approvalModalBody">
+                <!-- 동적 콘텐츠 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK v9 (modular) -->
+    <script type="module">
+        // Firebase 설정
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDivC93BY-VPvNM7LR62VjfwQ2jlALLn38",
+            authDomain: "sangwon-sign-off-6b2ab.firebaseapp.com",
+            projectId: "sangwon-sign-off-6b2ab",
+            storageBucket: "sangwon-sign-off-6b2ab.firebasestorage.app",
+            messagingSenderId: "483681795461",
+            appId: "1:483681795461:web:30a226e318e4d6ce3858ec"
+        };
+
+        // Firebase 초기화
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // 전역으로 노출
+        window.firebaseApp = app;
+        window.db = db;
+
+        console.log('🔥 Firebase 초기화 완료');
+    </script>
+    
+    <!-- 메인 애플리케이션 스크립트 -->
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>
