@@ -483,6 +483,10 @@ async function loadNewRequestPage() {
     const approverSelect = document.getElementById('assignedApprover');
     if (!approverSelect) return;
     
+    // ✅ 수정: 결재자 목록이 이미 로드된 경우 재로드하지 않음
+    // (자동새로고침 시 사용자가 선택한 결재자가 사라지는 버그 방지)
+    if (approverSelect.options.length > 1) return;
+    
     try {
         const users = await DB.getAll('users');
         const approvers = users.filter(u => (u.role === 'approver' || u.role === 'admin') && u.status === 'approved');
@@ -1335,9 +1339,12 @@ function showToast(message, type = 'info') {
 // ===== 자동 새로고침 =====
 function startAutoRefresh() {
     stopAutoRefresh();
-    // 5초마다 현재 페이지 데이터 새로고침
+    // ✅ 수정: 폼 입력 페이지(newRequest)는 자동새로고침 제외
+    // → 결재자 선택 등 입력 내용이 초기화되는 버그 방지
+    const SKIP_AUTO_REFRESH_PAGES = ['newRequest'];
+    
     autoRefreshInterval = setInterval(() => {
-        if (currentPage) {
+        if (currentPage && !SKIP_AUTO_REFRESH_PAGES.includes(currentPage)) {
             loadPageData(currentPage);
         }
     }, 5000);
