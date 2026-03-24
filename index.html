@@ -90,10 +90,10 @@
                 <i class="fas fa-file-signature"></i> 온라인 결재 시스템
             </div>
             <div class="navbar-user">
-                <div class="auto-refresh-indicator">
-                    <i class="fas fa-sync-alt"></i>
-                    <span>자동 새로고침</span>
-                </div>
+                <button class="btn-refresh" id="manualRefreshBtn" onclick="window.manualRefresh()" title="데이터 새로고침">
+                    <i class="fas fa-sync-alt" id="refreshIcon"></i>
+                    <span>새로고침</span>
+                </button>
                 <div class="user-info">
                     <i class="fas fa-user-circle"></i>
                     <span id="navbarUserName"></span>
