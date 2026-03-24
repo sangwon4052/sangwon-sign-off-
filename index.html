@@ -37,7 +37,7 @@
                 </div>
                 <div class="default-account-info">
                     <p><i class="fas fa-info-circle"></i> 기본 관리자 계정</p>
-                    <p>이메일: admin@company.com</p>
+                    <p>이메일: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2243464f4b4c62414d4f52434c5b0c414d4f">[email&#160;protected]</a></p>
                     <p>비밀번호: admin123</p>
                 </div>
             </div>
@@ -189,8 +189,8 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label for="requestFiles">첨부 파일 (워드, 한글, 엑셀)</label>
-                                <input type="file" id="requestFiles" multiple accept=".doc,.docx,.hwp,.xls,.xlsx">
+                                <label for="requestFiles">첨부 파일 (워드, 한글, 엑셀, PDF)</label>
+                                <input type="file" id="requestFiles" multiple accept=".doc,.docx,.hwp,.xls,.xlsx,.pdf">
                                 <small>여러 파일을 선택할 수 있습니다. (최대 10MB)</small>
                                 <div id="filePreviewList" class="file-preview-list"></div>
                             </div>
@@ -310,7 +310,7 @@
     </div>
 
     <!-- Firebase SDK v9 (modular) -->
-    <script type="module">
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module">
         // Firebase 설정
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
         import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
@@ -329,13 +329,4 @@
         const db = getFirestore(app);
 
         // 전역으로 노출
-        window.firebaseApp = app;
-        window.db = db;
-
-        console.log('🔥 Firebase 초기화 완료');
-    </script>
-    
-    <!-- 메인 애플리케이션 스크립트 -->
-    <script type="module" src="js/app.js"></script>
-</body>
-</html>
+        window.firebaseAp
