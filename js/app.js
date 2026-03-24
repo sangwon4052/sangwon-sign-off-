@@ -590,7 +590,7 @@ function updateFilePreview() {
     previewList.innerHTML = Array.from(files).map(file => `
         <div class="file-item">
             <div class="file-info">
-                <i class="fas fa-file-alt"></i>
+                <i class="${getFileIcon(file.name)}"></i>
                 <div>
                     <div class="file-name">${file.name}</div>
                     <div class="file-size">${formatFileSize(file.size)}</div>
@@ -606,6 +606,15 @@ function formatFileSize(bytes) {
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+}
+
+function getFileIcon(fileName) {
+    const ext = fileName.split('.').pop().toLowerCase();
+    if (ext === 'pdf') return 'fas fa-file-pdf';
+    if (['xls', 'xlsx'].includes(ext)) return 'fas fa-file-excel';
+    if (['doc', 'docx'].includes(ext)) return 'fas fa-file-word';
+    if (ext === 'hwp') return 'fas fa-file-alt';
+    return 'fas fa-file';
 }
 
 // ===== 처리할 결재 =====
