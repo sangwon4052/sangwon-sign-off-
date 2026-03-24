@@ -1382,9 +1382,11 @@ window.approveUser = approveUser;
 window.rejectUser = rejectUser;
 
 // ===== 이벤트 리스너 등록 =====
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('📱 DOM 로드 완료');
-    
+// 모듈 스크립트는 DOM 파싱 완료 후 순서대로 실행이 보장되므로
+// DOMContentLoaded 없이 직접 실행
+(function setupApp() {
+    console.log('📱 앱 셋업 시작');
+
     // 저장된 이메일 복원
     const savedEmail = localStorage.getItem('savedEmail');
     if (savedEmail) {
@@ -1393,43 +1395,43 @@ document.addEventListener('DOMContentLoaded', function() {
         if (emailInput) emailInput.value = savedEmail;
         if (rememberCheckbox) rememberCheckbox.checked = true;
     }
-    
+
     // 로그인/회원가입 폼
     const loginForm = document.getElementById('loginForm');
     if (loginForm) loginForm.addEventListener('submit', handleLogin);
-    
+
     const signupForm = document.getElementById('signupForm');
     if (signupForm) signupForm.addEventListener('submit', handleSignup);
-    
+
     // 직원 계정 생성 폼
     const employeeForm = document.getElementById('employeeRegistrationForm');
     if (employeeForm) employeeForm.addEventListener('submit', handleEmployeeRegistration);
-    
+
     // 새 결재 요청 폼
     const newRequestForm = document.getElementById('newRequestForm');
     if (newRequestForm) newRequestForm.addEventListener('submit', handleNewRequest);
-    
+
     // 파일 선택 이벤트
     const filesInput = document.getElementById('requestFiles');
     if (filesInput) filesInput.addEventListener('change', updateFilePreview);
-    
+
     // 로그아웃 버튼
     const logoutBtn = document.getElementById('logoutBtn');
     if (logoutBtn) logoutBtn.addEventListener('click', handleLogout);
-    
+
     // 페이지 전환 링크
     const showSignupLink = document.getElementById('showSignupLink');
     if (showSignupLink) showSignupLink.addEventListener('click', (e) => {
         e.preventDefault();
         showSignupPage();
     });
-    
+
     const showLoginLink = document.getElementById('showLoginLink');
     if (showLoginLink) showLoginLink.addEventListener('click', (e) => {
         e.preventDefault();
         showLoginPage();
     });
-    
+
     // 사이드바 메뉴 클릭 이벤트
     document.querySelectorAll('.menu-item').forEach(item => {
         item.addEventListener('click', function() {
@@ -1439,7 +1441,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-    
+
     // 앱 초기화
     initializeApp();
-});
+})();
